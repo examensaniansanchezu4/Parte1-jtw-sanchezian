@@ -14,6 +14,7 @@ from rest_framework_simplejwt.views import (
 
 # Importar ViewSets
 from . import api_views
+from . import oauth_views 
 
 # ===== ROUTER PARA VIEWSETS =====
 # El router genera automáticamente las URLs para CRUD
@@ -38,7 +39,12 @@ urlpatterns = [
     # Verificar token (POST: token → válido o inválido)
     path('token/verify/', TokenVerifyView.as_view(), name='token_verify'),
     
-    
+     
+    # ─────────────────────────────────
+    # 🔑 AUTENTICACIÓN OAUTH 2.0 (GOOGLE)
+    # ─────────────────────────────────
+    path('auth/google/redirect/', oauth_views.google_oauth_redirect, name='google_redirect'),
+    path('auth/google/callback/', oauth_views.google_oauth_callback, name='google_callback'),
     # ─────────────────────────────────
     # 📚 ENDPOINTS DE LA API (CRUD)
     # ─────────────────────────────────
@@ -52,4 +58,6 @@ urlpatterns = [
     # DELETE /api/libros/{id}/     - Eliminar libro
     # Y lo mismo para autores, categorias, prestamos
     path('', include(router.urls)),
+
+    
 ]

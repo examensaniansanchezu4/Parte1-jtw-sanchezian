@@ -18,11 +18,23 @@ Including another URLconf
 
 from django.contrib import admin
 from django.urls import path, include
-
+from libros.jwt_views import CustomTokenObtainPairView
+from libros import web_views 
 urlpatterns = [
     # Admin de Django
     path('admin/', admin.site.urls),
     
     # ✨ URLs de la API (AGREGAR ESTA LÍNEA)
-    path('api/', include('libros.api_urls')),
+    path('api/',include('libros.api_urls')),
+
+     # URLs de páginas web (para pruebas)
+    path('', web_views.home, name='home'),
+    path('oauth/login/', web_views.oauth_login, name='oauth_login'),
+    path('login/jwt/', web_views.jwt_login_page, name='jwt_login_page'),
+    
+     # JWT personalizado
+    path('auth/jwt/login/', CustomTokenObtainPairView.as_view(), name='jwt_login'),
+
+     # ← AGREGAR: OAuth 2.0 URLs de django-oauth-toolkit
+    path('o/', include('oauth2_provider.urls', namespace='oauth2_provider')),
 ]

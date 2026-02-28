@@ -38,11 +38,18 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.sites',  # ← AGREGAR (requerido por allauth)
     
     # Third-party apps
     'rest_framework',
     'corsheaders',
     'django_filters',
+    'oauth2_provider',  # ← AGREGAR (Django OAuth Toolkit)
+    'allauth',  # ← AGREGAR
+    'allauth.account',  # ← AGREGAR
+    'allauth.socialaccount',  # ← AGREGAR
+    'allauth.socialaccount.providers.google',
+    'rest_framework_simplejwt',  # ← AGREGAR
     
     # Tu aplicación
     'libros',
@@ -51,12 +58,30 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
-    'corsheaders.middleware.CorsMiddleware',  # ← AGREGAR ESTO
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'allauth.account.middleware.AccountMiddleware',  # ← AGREGAR
+]
+
+# =======================
+# SITE CONFIGURATION
+# =======================
+SITE_ID = 1  # ← AGREGAR
+
+
+# =======================
+# AUTHENTICATION BACKENDS
+# =======================
+AUTHENTICATION_BACKENDS = [
+    # Backend por defecto de Django (username/password)
+    'django.contrib.auth.backends.ModelBackend',
+    
+    # Backend de allauth para OAuth social
+    'allauth.account.auth_backends.AuthenticationBackend',
 ]
 
 ROOT_URLCONF = 'biblioteca_project.urls'
@@ -64,7 +89,7 @@ ROOT_URLCONF = 'biblioteca_project.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [BASE_DIR / 'templates'],  # ← AGREGAR esto
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -209,3 +234,57 @@ LANGUAGE_CODE = 'es-mx'
 TIME_ZONE = 'America/Hermosillo'  # Hermosillo
 USE_I18N = True
 USE_TZ = True
+
+
+# =======================
+# DJANGO ALLAUTH CONFIG
+# =======================
+
+# Configuración de cuentas
+ACCOUNT_EMAIL_REQUIRED = True
+ACCOUNT_USERNAME_REQUIRED = False  # Solo email para login social
+ACCOUNT_AUTHENTICATION_METHOD = 'email'
+ACCOUNT_EMAIL_VERIFICATION = 'optional'  # Para desarrollo: 'mandatory' en producción
+
+# Configuración de login social
+SOCIALACCOUNT_AUTO_SIGNUP = True  # Crear usuario automáticamente
+SOCIALACCOUNT_EMAIL_VERIFICATION = 'none'  # No verificar email en OAuth
+
+# Proveedores OAuth configurados
+SOCIALACCOUNT_PROVIDERS = {
+    'google': {
+        'SCOPE': [
+            'profile',
+            'email',
+        ],
+        'AUTH_PARAMS': {
+            'access_type': 'online',
+        },
+        'APP': {
+            'client_id': "",  # ← REEMPLAZAR
+            'secret': "",  # ← REEMPLAZAR
+            'key': ''
+        }
+    }
+}
+
+# =======================
+# OAUTH 2.0 PROVIDER SETTINGS
+# =======================
+# Configuración para django-oauth-toolkit
+OAUTH2_PROVIDER = {
+    'ACCESS_TOKEN_EXPIRE_SECONDS': 3600,
+    'REFRESH_TOKEN_EXPIRE_SECONDS': 86400 * 7,
+    'SCOPES': {
+        'read': 'Acceso de lectura',
+        'write': 'Acceso de escritura',
+    },
+    # CORRECCIÓN AQUÍ: Quitar ".models"
+    'ACCESS_TOKEN_MODEL': 'oauth2_provider.AccessToken',
+    'REFRESH_TOKEN_MODEL': 'oauth2_provider.RefreshToken',
+}
+
+
+ACCOUNT_DEFAULT_HTTP_PROTOCOL = "http"
+
+SITE_DOMAIN = "127.0.0.1:8000"

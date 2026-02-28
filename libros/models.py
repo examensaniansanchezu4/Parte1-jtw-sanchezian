@@ -7,7 +7,7 @@ from decimal import Decimal
 class Categoria(models.Model):
     """Categorías de libros (Ficción, No Ficción, Ciencia, etc.)"""
     
-    nombre = models.CharField(max_length=100, unique=True)
+    nombre = models.CharField(max_length=150, unique=True)
     descripcion = models.TextField(blank=True)
     activo = models.BooleanField(default=True)
     fecha_creacion = models.DateTimeField(auto_now_add=True)
@@ -61,8 +61,8 @@ class Libro(models.Model):
     ]
     
     # Información básica
-    titulo = models.CharField(max_length=150)
-    subtitulo = models.CharField(max_length=200, blank=True)
+    titulo = models.CharField(max_length=100)
+    subtitulo = models.CharField(max_length=100, blank=True)
     isbn = models.CharField(max_length=13, unique=True, 
                            help_text="ISBN de 13 dígitos")
     
@@ -73,7 +73,7 @@ class Libro(models.Model):
                                  null=True, related_name='libros')
     
     # Detalles de publicación
-    editorial = models.CharField(max_length=200, blank=True)
+    editorial = models.CharField(max_length=100, blank=True)
     fecha_publicacion = models.DateField(null=True, blank=True)
     paginas = models.PositiveIntegerField(
         null=True, blank=True,

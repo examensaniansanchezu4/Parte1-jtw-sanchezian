@@ -3,7 +3,7 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
 from django_filters.rest_framework import DjangoFilterBackend
-
+from rest_framework.permissions import AllowAny
 from .models import Categoria, Autor, Libro, Prestamo
 from .serializers import (
     CategoriaSerializer, AutorSerializer, 
@@ -99,7 +99,7 @@ class PrestamoViewSet(viewsets.ModelViewSet):
     
     queryset = Prestamo.objects.all().select_related('libro', 'usuario')
     serializer_class = PrestamoSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [AllowAny]
     filter_backends = [DjangoFilterBackend, filters.OrderingFilter]
     filterset_fields = ['estado', 'usuario']
     ordering_fields = ['fecha_prestamo', 'fecha_devolucion_esperada']
